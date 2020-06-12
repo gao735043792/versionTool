@@ -18,9 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
@@ -33,38 +31,52 @@ public class MainUI extends JFrame implements ActionListener {
 
     private JButton createBtn;
 
-    //产品所属类型
-    JComboBox<String> jComboBox;
-    //补丁目录
+    /**
+     * 产品所属类型
+     */
+    private JComboBox<String> jComboBox;
+    /**
+     * 补丁目录
+     */
     private JLabel pathLabel;
     private JTextField folderFiled;
     private JButton selectFolder = new JButton("...");
-    // 文件选择器
+    /**
+     * 文件选择器
+     */
     private JFileChooser jFileChooser = new JFileChooser();
 
-    //版本号
+    /**
+     * 版本号
+     */
     private JLabel versionLabel;
     private JTextField versionNoFiled;
-    //云标识
+    /**
+     * 云标识
+     */
     private JLabel cloudLabel;
     private JTextField cloudFiled;
-    //应用标识
+    /**
+     * 应用标识
+     */
     private JLabel appsLabel;
     private JTextField appsFiled;
 
     private JTextArea info;
 
-    public MainUI() {
+    private MainUI() {
         init();
     }
 
-    public void init() {
+    private void init() {
         initFrame();
     }
 
-    //布局
-    public void initFrame() {
-        this.setTitle("金蝶苍穹补丁制作工具");
+    /**
+     * 布局
+     */
+    private void initFrame() {
+        this.setTitle("金蝶云苍穹补丁制作工具");
         this.setSize(200, 200);
         this.setLocation(100, 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -91,14 +103,15 @@ public class MainUI extends JFrame implements ActionListener {
         cloudLabel = new JLabel("云标识");
         jp1.add(cloudLabel);
         cloudFiled = new JTextField(6);
-
         jp1.add(cloudFiled);
 
+        //应用标识
         appsLabel = new JLabel("应用标识");
         jp1.add(appsLabel);
         appsFiled = new JTextField(15);
         jp1.add(appsFiled);
 
+        //版本号
         versionLabel = new JLabel("版本号");
         jp1.add(versionLabel);
         versionNoFiled = new JTextField(10);
@@ -106,31 +119,30 @@ public class MainUI extends JFrame implements ActionListener {
         versionNoFiled.setText("2.0.");
         jp1.add(versionNoFiled);
 
+        //归档目录
         pathLabel = new JLabel("补丁文件目录");
         jp1.add(pathLabel);
         folderFiled = new JTextField(30);
         jp1.add(folderFiled);
         jp1.add(selectFolder);
-        // 添加事件处理
         selectFolder.addActionListener(this);
 
-
+        //制作按钮
         createBtn = new JButton("开始制作");
         createBtn.addActionListener(this);
         jp1.add(createBtn);
-
         info = new JTextArea(30, 100);
         JScrollPane sp = new JScrollPane(info);
         jp2.add(sp);
 
         //版权
-        JLabel rightLabel = new JLabel("Mr.靠谱出品 必属精品");
+        JLabel rightLabel = new JLabel("建筑出品，必属精品。Mr.靠谱");
         jp3.add(rightLabel);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       Object source = e.getSource();
+        Object source = e.getSource();
         // 判断触发方法的按钮是哪个
         if (selectFolder.equals(source)) {
             // 设定只能选择到文件夹
@@ -140,25 +152,22 @@ public class MainUI extends JFrame implements ActionListener {
             if (state == 1) {
                 return;
             } else {
-                // f为选择到的目录
+                // 选择到的目录
                 File folder = jFileChooser.getSelectedFile();
                 folderFiled.setText(folder.getAbsolutePath());
             }
-        }
-        else if(jComboBox.equals(source)){
+        } else if (jComboBox.equals(source)) {
             ProductEnum type = ProductEnum.values()[jComboBox.getSelectedIndex()];
-           //设置默认值
-            if(ProductEnum.BIZ == type){
+            //设置默认值
+            if (ProductEnum.BIZ == type) {
                 cloudFiled.setText("pmgt");
                 appsFiled.setText("pmbs,pmpm,pmas,pmba,pmct,pmco,pmim,pmfs,pmsc,pmem");
-            }else if(ProductEnum.CR == type){
+            } else if (ProductEnum.CR == type) {
                 cloudFiled.setText("ec");
                 appsFiled.setText("cont,ecbd,ecco,ecma");
             }
 
-        }
-        else if(createBtn.equals(source)) {
-
+        } else if (createBtn.equals(source)) {
             //获取补丁所属产品
             ProductEnum type = ProductEnum.values()[jComboBox.getSelectedIndex()];
             String cloud = cloudFiled.getText().trim();
@@ -202,7 +211,7 @@ public class MainUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "dm、jar目录下不能同时为空", "", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            info.setText(LocalDateTime.now()  + ",开始制作补丁\n");
+            info.setText(LocalDateTime.now() + ",开始制作补丁\n");
             info.append("文件的MD5值生成中......\n");
             Map<String, Map<String, String>> md5Map = new HashMap<String, Map<String, String>>();
             Map<String, String> dmMap = new HashMap<String, String>();
@@ -214,7 +223,7 @@ public class MainUI extends JFrame implements ActionListener {
             }
             //获取dm文件的MD5值
             for (File dm : dmFiles) {
-                if(this.macDefaultFile(dm)){
+                if (this.macDefaultFile(dm)) {
                     continue;
                 }
                 FileInputStream input = null;
@@ -232,7 +241,7 @@ public class MainUI extends JFrame implements ActionListener {
             //获取jar文件的MD5值
             Map<String, String> jarMap = new HashMap<String, String>();
             for (File jar : jarFiles) {
-                if(this.macDefaultFile(jar)){
+                if (this.macDefaultFile(jar)) {
                     continue;
                 }
                 FileInputStream input = null;
@@ -247,27 +256,28 @@ public class MainUI extends JFrame implements ActionListener {
                 }
             }
             md5Map.put(ZipFileType.jar.toString(), jarMap);
-
             String xmlFile = folderPath + File.separator + "kdpkgs.xml";
             info.append("配置文件生成中......\n");
             try {
-                this.createXml(type,appNameList, appidList, versionNo, md5Map, xmlFile);
+                this.createXml(type, appNameList, appidList, versionNo, md5Map, xmlFile);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 info.append("生成配置文件异常：" + ex.getMessage() + "\n");
             }
             info.append("配置文件：" + xmlFile + "\n");
-
             //打成压缩包
             info.append("补丁包压缩中.....\n");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
-            String zipPatch = CompressFileUtil.compress(folderPath, folderPath, cloud + "-v" + versionNo + "-" + formatter.format(LocalDate.now()));
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+            String zipPatch = CompressFileUtil.compress(folderPath, folderPath, cloud + "-v" + versionNo + "-" + dateFormatter.format(LocalDate.now()) + timeFormatter.format(LocalTime.now()));
             info.append(LocalDateTime.now() + "，补丁制作完成，补丁包位置：" + zipPatch + "\n");
         }
     }
 
-    //生成xml文件
-    private void createXml(ProductEnum type, List<String> appNameList, List<String> appidList, String versionNo, Map<String, Map<String, String>> md5Map, String xmlFile) throws Exception{
+    /**
+     * 生成xml文件
+     */
+    private void createXml(ProductEnum type, List<String> appNameList, List<String> appidList, String versionNo, Map<String, Map<String, String>> md5Map, String xmlFile) throws Exception {
         //创建xml文档
         Document document = DocumentHelper.createDocument();
         //创建根元素
@@ -280,10 +290,10 @@ public class MainUI extends JFrame implements ActionListener {
 
         //添加根元素下的子元素及其属性,内容
         Element product = kdpkgs.addElement("product");
-        if(type == ProductEnum.BIZ) {
+        if (type == ProductEnum.BIZ) {
             product.addAttribute("name", "cosmic_" + type.getTypeCode()).addAttribute("nameCN", "金蝶云苍穹平台" + type.getName()).addAttribute("ver", versionNo);
-        }else{
-            product.addAttribute("name", "cosmic_" + type.getTypeCode()).addAttribute("nameCN", "金蝶云苍穹" + type.getName()+ "行业版").addAttribute("ver", versionNo);
+        } else {
+            product.addAttribute("name", "cosmic_" + type.getTypeCode()).addAttribute("nameCN", "金蝶云苍穹" + type.getName() + "行业版").addAttribute("ver", versionNo);
         }
         product.addElement("force").addText("true");
         Map<String, String> jarMap = md5Map.get(ZipFileType.jar.toString());
@@ -351,13 +361,17 @@ public class MainUI extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * mac系统下默认文件判断
+     */
+    private boolean macDefaultFile(File file) {
+        return ".DS_STORE".equalsIgnoreCase(file.getName());
+    }
+
     public static void main(String[] args) {
         MainUI util = new MainUI();
         util.setVisible(true);
         util.pack();
     }
 
-    private boolean macDefaultFile(File file){
-        return file.getName().equalsIgnoreCase(".DS_STORE");
-    }
 }

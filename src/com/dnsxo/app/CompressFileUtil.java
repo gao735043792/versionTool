@@ -31,8 +31,12 @@ public class CompressFileUtil {
         FileSet fileSet = new FileSet();
         fileSet.setProject(project);
         fileSet.setDir(src);
-        //fileSet.setIncludes("**/*.java"); 包括哪些文件或文件夹 eg:zip.setIncludes("*.java");
-        //fileSet.setExcludes(...); 排除哪些文件或文件夹
+        //只打包的目录与文件
+        fileSet.setIncludes("/dm/*");
+        fileSet.setIncludes("/jar/*");
+        fileSet.setIncludes("kdpkgs.xml");
+        //排除哪些文件或文件夹
+        fileSet.setExcludes("*.zip");
         zip.addFileset(fileSet);
         //执行生成
         zip.execute();
