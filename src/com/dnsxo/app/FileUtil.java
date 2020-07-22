@@ -10,11 +10,11 @@ import java.io.File;
  * @author GAOFENG (http://www.dnsxo.com)
  * @date 2020年1月11日 下午0s9:04:20
  */
-public class CompressFileUtil {
+public class FileUtil {
 
     public static String compress(String srcDir, String destDir, String zipName) {
         File src = new File(srcDir);
-        if (!src.exists()){
+        if (!src.exists()) {
             throw new RuntimeException(srcDir + "不存在！");
         }
         Project project = new Project();
@@ -24,7 +24,7 @@ public class CompressFileUtil {
         zip.setEncoding("UTF-8");
         zip.setProject(project);
         File dest = new File(destDir + File.separator + zipName + ".zip");
-        if(dest.exists()){
+        if (dest.exists()) {
             dest.delete();
         }
         zip.setDestFile(dest);
@@ -33,7 +33,7 @@ public class CompressFileUtil {
         fileSet.setDir(src);
         //只打包的目录与文件
         fileSet.setIncludes("/dm/*");
-        fileSet.setIncludes("/jar/*");
+        fileSet.setIncludes("/jar/biz/*");
         fileSet.setIncludes("kdpkgs.xml");
         //排除哪些文件或文件夹
         fileSet.setExcludes("*.zip");

@@ -30,7 +30,7 @@ import java.util.*;
 public class MainUI extends JFrame implements ActionListener {
 
     private JButton createBtn;
-
+    private JButton helpBtn;
     /**
      * 产品所属类型
      */
@@ -76,68 +76,85 @@ public class MainUI extends JFrame implements ActionListener {
      * 布局
      */
     private void initFrame() {
+
         this.setTitle("金蝶云苍穹补丁制作工具");
-        this.setSize(200, 200);
         this.setLocation(100, 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        FlowLayout fl = new FlowLayout();
-        JPanel jp1 = new JPanel();
-        JPanel jp2 = new JPanel();
-        JPanel jp3 = new JPanel();
 
-        jp1.setLayout(fl);
-        jp2.setLayout(fl);
-        jp3.setLayout(fl);
+        //工具栏
+        JToolBar toolBar = new JToolBar();
+        toolBar.setSize(200, 50);
+        //内容区
+        JPanel context = new JPanel();
+        context.setSize(200, 200);
+        context.setLayout(new BorderLayout(20, 20));
 
-        getContentPane().add("North", jp1);
-        getContentPane().add("Center", jp2);
-        getContentPane().add("South", jp3);
+        JPanel head = new JPanel();
+        JPanel content = new JPanel();
+        JPanel bottom = new JPanel();
+        context.add(head, BorderLayout.NORTH);
+        context.add(content, BorderLayout.CENTER);
+        context.add(bottom, BorderLayout.SOUTH);
+
+        this.getContentPane().add(toolBar, BorderLayout.NORTH);
+        this.getContentPane().add(context, BorderLayout.CENTER);
 
         //下拉列表
         jComboBox = new JComboBox<String>();
         jComboBox.addItem(ProductEnum.BIZ.getName());
         jComboBox.addItem(ProductEnum.CR.getName());
-        jp1.add(jComboBox);
+        jComboBox.setPreferredSize(new Dimension(200, 30));
+        head.add(jComboBox);
         jComboBox.addActionListener(this);
 
         cloudLabel = new JLabel("云标识");
-        jp1.add(cloudLabel);
-        cloudFiled = new JTextField(6);
-        jp1.add(cloudFiled);
+        head.add(cloudLabel);
+        cloudFiled = new JTextField();
+        cloudFiled.setPreferredSize(new Dimension(50, 30));
+        head.add(cloudFiled);
 
         //应用标识
         appsLabel = new JLabel("应用标识");
-        jp1.add(appsLabel);
-        appsFiled = new JTextField(15);
-        jp1.add(appsFiled);
+        head.add(appsLabel);
+        appsFiled = new JTextField();
+        appsFiled.setPreferredSize(new Dimension(350, 30));
+        head.add(appsFiled);
 
         //版本号
         versionLabel = new JLabel("版本号");
-        jp1.add(versionLabel);
-        versionNoFiled = new JTextField(10);
+        head.add(versionLabel);
+        versionNoFiled = new JTextField();
         //设置默认值
         versionNoFiled.setText("2.0.");
-        jp1.add(versionNoFiled);
+        versionNoFiled.setPreferredSize(new Dimension(50, 30));
+        head.add(versionNoFiled);
 
         //归档目录
-        pathLabel = new JLabel("补丁文件目录");
-        jp1.add(pathLabel);
-        folderFiled = new JTextField(30);
-        jp1.add(folderFiled);
-        jp1.add(selectFolder);
+        pathLabel = new JLabel("补丁文件路径");
+        head.add(pathLabel);
+        folderFiled = new JTextField();
+        head.add(selectFolder);
+        head.add(folderFiled);
+        folderFiled.setPreferredSize(new Dimension(300, 30));
         selectFolder.addActionListener(this);
 
         //制作按钮
-        createBtn = new JButton("开始制作");
+        createBtn = new JButton("制作补丁");
         createBtn.addActionListener(this);
-        jp1.add(createBtn);
+        toolBar.add(createBtn);
+        toolBar.addSeparator();
+        toolBar.setFloatable(true);
+        helpBtn = new JButton("帮助");
+        helpBtn.addActionListener(this);
+        toolBar.add(helpBtn);
+
         info = new JTextArea(30, 100);
         JScrollPane sp = new JScrollPane(info);
-        jp2.add(sp);
+        content.add(sp);
 
         //版权
-        JLabel rightLabel = new JLabel("建筑出品，必属精品。Mr.靠谱");
-        jp3.add(rightLabel);
+        JLabel rightLabel = new JLabel("建筑出品 必属精品  ©CopyRight Mr.靠谱");
+        bottom.add(rightLabel);
     }
 
     @Override
@@ -172,25 +189,25 @@ public class MainUI extends JFrame implements ActionListener {
             ProductEnum type = ProductEnum.values()[jComboBox.getSelectedIndex()];
             String cloud = cloudFiled.getText().trim();
             if ("".equals(cloud)) {
-                JOptionPane.showMessageDialog(null, "请输入云标识", "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "请输入云标识", "提示信息", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
             String apps = appsFiled.getText().trim();
             if ("".equals(apps)) {
-                JOptionPane.showMessageDialog(null, "请输入应用标识", "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "请输入应用标识", "提示信息", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
             String versionNo = versionNoFiled.getText().trim();
             if ("".equals(versionNo)) {
-                JOptionPane.showMessageDialog(null, "请输入补丁版本号", "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "请输入补丁版本号", "提示信息", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
             String folderPath = folderFiled.getText().trim();
             if ("".equals(folderPath)) {
-                JOptionPane.showMessageDialog(null, "请输入补丁文件目录", "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "请输入补丁文件目录", "提示信息", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -200,15 +217,45 @@ public class MainUI extends JFrame implements ActionListener {
             for (String appid : appidList) {
                 appNameList.add(cloud + "-" + appid);
             }
-
+            //获取有效的dm文件
             File dmFolder = new File(folderPath + File.separator + ZipFileType.dm.toString());
             File[] dmFiles = dmFolder.listFiles();
-
+            List<File> validDmFiles = new ArrayList<File>();
+            for (String cloudAndAppName : appNameList){
+                boolean isExist = false;
+                for (File dmFile : dmFiles) {
+                    String fileName = dmFile.getName().replace("-dm-1.x.zip","");
+                    if (fileName.equals(cloudAndAppName)) {
+                        validDmFiles.add(dmFile);
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(!isExist){
+                    JOptionPane.showMessageDialog(this, String.format("%s目录下未找到%s相关的压缩包",dmFolder.getPath(),cloudAndAppName), "警告信息", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            //获取有效的jar文件
             File jarFolder = new File(folderPath + File.separator + ZipFileType.jar.toString() + File.separator + "biz");
             File[] jarFiles = jarFolder.listFiles();
+            List<File> validJarFiles = new ArrayList<File>();
+            for (String cloudAndAppName : appNameList){
+                boolean isExist = false;
+                for (File jarFile : jarFiles) {
+                    String fileName = jarFile.getName().replace(".zip","");
+                    if (fileName.equals(cloudAndAppName)) {
+                        validJarFiles.add(jarFile);
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(!isExist){
+                    JOptionPane.showMessageDialog(this, String.format("%s目录下未找到%s相关的压缩包",jarFolder.getPath(),cloudAndAppName), "警告信息", JOptionPane.WARNING_MESSAGE);
+                }
+            }
 
-            if (dmFiles.length == 0 && jarFiles.length == 0) {
-                JOptionPane.showMessageDialog(null, "dm、jar目录下不能同时为空", "", JOptionPane.ERROR_MESSAGE);
+            if (validDmFiles.isEmpty() && validJarFiles.isEmpty()) {
+                JOptionPane.showMessageDialog(this, String.format("%s目录下未找到相关的元数据与应用压缩包",folderPath), "错误信息", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             info.setText(LocalDateTime.now() + ",开始制作补丁\n");
@@ -222,7 +269,7 @@ public class MainUI extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
             //获取dm文件的MD5值
-            for (File dm : dmFiles) {
+            for (File dm : validDmFiles) {
                 if (this.macDefaultFile(dm)) {
                     continue;
                 }
@@ -240,7 +287,7 @@ public class MainUI extends JFrame implements ActionListener {
             md5Map.put(ZipFileType.dm.toString(), dmMap);
             //获取jar文件的MD5值
             Map<String, String> jarMap = new HashMap<String, String>();
-            for (File jar : jarFiles) {
+            for (File jar : validJarFiles) {
                 if (this.macDefaultFile(jar)) {
                     continue;
                 }
@@ -269,8 +316,11 @@ public class MainUI extends JFrame implements ActionListener {
             info.append("补丁包压缩中.....\n");
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
-            String zipPatch = CompressFileUtil.compress(folderPath, folderPath, cloud + "-v" + versionNo + "-" + dateFormatter.format(LocalDate.now()) + timeFormatter.format(LocalTime.now()));
+            String zipPatch = FileUtil.compress(folderPath, folderPath, cloud + "-v" + versionNo + "-" + dateFormatter.format(LocalDate.now()) + timeFormatter.format(LocalTime.now()));
             info.append(LocalDateTime.now() + "，补丁制作完成，补丁包位置：" + zipPatch + "\n");
+        }
+        else if(helpBtn.equals(source)){
+            JOptionPane.showMessageDialog(this, String.format("开发者：高峰 \n 联系电话：15080668358"), "提示信息", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -370,6 +420,8 @@ public class MainUI extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         MainUI util = new MainUI();
+        //禁止用户改变窗体大小
+        util.setResizable(false);
         util.setVisible(true);
         util.pack();
     }
