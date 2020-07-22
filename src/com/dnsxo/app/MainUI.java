@@ -29,6 +29,7 @@ import java.util.*;
  */
 public class MainUI extends JFrame implements ActionListener {
 
+    private String version = "V2.5";
     private JButton createBtn;
     private JButton helpBtn;
     /**
@@ -77,7 +78,7 @@ public class MainUI extends JFrame implements ActionListener {
      */
     private void initFrame() {
 
-        this.setTitle("金蝶云苍穹补丁制作工具");
+        this.setTitle("金蝶云苍穹补丁制作工具" + version);
         this.setLocation(100, 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

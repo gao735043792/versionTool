@@ -40,6 +40,6 @@ public class FileUtil {
         zip.addFileset(fileSet);
         //执行生成
         zip.execute();
-        return dest.getAbsolutePath().toString();
+        return dest.getAbsolutePath();
     }
 }
