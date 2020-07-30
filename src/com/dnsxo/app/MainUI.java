@@ -219,7 +219,11 @@ public class MainUI extends JFrame implements ActionListener {
                 appNameList.add(cloud + "-" + appid);
             }
             //获取有效的dm文件
-            File dmFolder = new File(folderPath + File.separator + ZipFileType.dm.toString());
+            String dmFolderPath = folderPath + File.separator + ZipFileType.dm.toString();
+            File dmFolder = new File(dmFolderPath);
+            if(!dmFolder.exists()){
+                JOptionPane.showMessageDialog(this,String.format("补丁制作中止，原因是目录%s不存在，请检查。",dmFolderPath));
+            }
             File[] dmFiles = dmFolder.listFiles();
             List<File> validDmFiles = new ArrayList<File>();
             for (String cloudAndAppName : appNameList){
@@ -237,7 +241,11 @@ public class MainUI extends JFrame implements ActionListener {
                 }
             }
             //获取有效的jar文件
-            File jarFolder = new File(folderPath + File.separator + ZipFileType.jar.toString() + File.separator + "biz");
+            String bizFolderPath = folderPath + File.separator + ZipFileType.jar.toString() + File.separator + "biz";
+            File jarFolder = new File(bizFolderPath);
+            if(!jarFolder.exists()){
+                JOptionPane.showMessageDialog(this,String.format("补丁制作中止，原因是目录%s不存在，请检查。",bizFolderPath));
+            }
             File[] jarFiles = jarFolder.listFiles();
             List<File> validJarFiles = new ArrayList<File>();
             for (String cloudAndAppName : appNameList){
