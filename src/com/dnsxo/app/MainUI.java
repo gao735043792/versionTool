@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class MainUI extends JFrame implements ActionListener {
 
-    private String version = "V2.5";
+    private String version = "V2.6";
     private JButton createBtn;
     private JButton helpBtn;
     /**
