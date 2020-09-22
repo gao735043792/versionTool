@@ -1,5 +1,6 @@
 package com.dnsxo.app;
 
+import com.dnsxo.enums.ProductDomainEnum;
 import com.dnsxo.enums.ProductEnum;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dom4j.Document;
@@ -36,6 +37,10 @@ public class MainUI extends JFrame implements ActionListener {
      * 产品所属类型
      */
     private JComboBox<String> jComboBox;
+    /**
+     * 所属云
+     */
+    private JComboBox<String> cloudBox;
     /**
      * 补丁目录
      */
@@ -100,13 +105,22 @@ public class MainUI extends JFrame implements ActionListener {
         this.getContentPane().add(toolBar, BorderLayout.NORTH);
         this.getContentPane().add(context, BorderLayout.CENTER);
 
-        //下拉列表
-        jComboBox = new JComboBox<String>();
+        //产品类型下拉列表
+        jComboBox = new JComboBox<>();
         jComboBox.addItem(ProductEnum.BIZ.getName());
         jComboBox.addItem(ProductEnum.CR.getName());
         jComboBox.setPreferredSize(new Dimension(200, 30));
         head.add(jComboBox);
         jComboBox.addActionListener(this);
+
+        //云下拉列表
+        cloudBox = new JComboBox<>();
+        for (ProductDomainEnum domainEnum:ProductDomainEnum.values()) {
+            cloudBox.addItem(domainEnum.getName());
+        }
+        cloudBox.setPreferredSize(new Dimension(200, 30));
+        head.add(cloudBox);
+        cloudBox.addActionListener(this);
 
         cloudLabel = new JLabel("云标识");
         head.add(cloudLabel);
@@ -174,14 +188,17 @@ public class MainUI extends JFrame implements ActionListener {
                 File folder = jFileChooser.getSelectedFile();
                 folderFiled.setText(folder.getAbsolutePath());
             }
-        } else if (jComboBox.equals(source)) {
-            ProductEnum type = ProductEnum.values()[jComboBox.getSelectedIndex()];
+        } else if (cloudBox.equals(source)) {
+            ProductDomainEnum type = ProductDomainEnum.values()[cloudBox.getSelectedIndex()];
             //设置默认值
-            if (ProductEnum.BIZ == type) {
-                cloudFiled.setText("pmgt");
-                appsFiled.setText("pmbs,pmpm,pmas,pmba,pmct,pmco,pmim,pmfs,pmsc,pmem");
-            } else if (ProductEnum.CR == type) {
-                cloudFiled.setText("ec");
+
+            if (ProductDomainEnum.PMGT == type) {
+                appsFiled.setText("pmbs,pmpm,pmas,pmba,pmct,pmco,pmim,pmfs,pmsc,pmem,pmpt");
+            }else if(ProductDomainEnum.EPM == type){
+                cloudFiled.setText(type.getCloudCode());
+                appsFiled.setText("eb,bgmd,bgbd,bgm,bgc");
+            }
+            else if (ProductDomainEnum.EC == type) {
                 appsFiled.setText("cont,ecbd,ecco,ecma");
             }
 
