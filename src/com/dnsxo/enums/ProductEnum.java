@@ -1,9 +1,9 @@
 package com.dnsxo.enums;
 
 /**
- * @description
+ * @description 产品类型
  * @author Mr.peak
- * @date 2020-05-10$ 00:20:00$
+ * @date 2020-05-10 00:20:00
  */
 public enum ProductEnum {
 
@@ -14,7 +14,7 @@ public enum ProductEnum {
     private int code;
     private String name;
     private String typeCode;
-    private ProductEnum(int code,String name,String typeCode) {
+    ProductEnum(int code,String name,String typeCode) {
         this.code = code;
         this.name = name;
         this.typeCode = typeCode;
