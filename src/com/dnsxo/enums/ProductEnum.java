@@ -1,23 +1,23 @@
 package com.dnsxo.enums;
 
 /**
- * @description 产品类型
  * @author Mr.peak
+ * @description 产品类型
  * @date 2020-05-10 00:20:00
  */
 public enum ProductEnum {
 
-    BIZ(1,"标准产品（业务）","biz"),
+    BOS(0, "金蝶云苍穹平台"),
+    BIZ(1, "金蝶云苍穹业务"),
+    INDUSTRY(2, "行业产品");
 
-    CR(2,"行业产品（建筑与房地产）","cr");
 
     private int code;
     private String name;
-    private String typeCode;
-    ProductEnum(int code,String name,String typeCode) {
+
+    ProductEnum(int code, String name) {
         this.code = code;
         this.name = name;
-        this.typeCode = typeCode;
     }
 
     public int getCode() {
@@ -28,7 +28,15 @@ public enum ProductEnum {
         return name;
     }
 
-    public String getTypeCode() {
-        return typeCode;
+    public static ProductEnum getEnumByName(Object name) {
+        if (name == null) {
+            return null;
+        }
+        for (ProductEnum enums : ProductEnum.values()) {
+            if (name.equals(enums.getName())) {
+                return enums;
+            }
+        }
+        return null;
     }
 }
