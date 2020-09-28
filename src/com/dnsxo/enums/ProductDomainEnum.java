@@ -12,8 +12,8 @@ public enum ProductDomainEnum {
     EPM(101, "企业绩效云", "epm", true),
     //行业产品
     EC(1001, "建筑项目云", "ec", false),
-    ASC(1005, "我家云-ASC云", "asc", false),
-    PSC(1010, "我家云-PSC云", "psc", false);
+    ASC(1005, "资产服务云", "asc", false),
+    PSC(1010, "物业服务云", "psc", false);
 
 
     private int code;
