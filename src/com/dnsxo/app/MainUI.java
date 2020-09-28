@@ -19,10 +19,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author GAOFENG (http://www.dnsxo.com)
@@ -30,13 +33,13 @@ import java.util.*;
  */
 public class MainUI extends JFrame implements ActionListener {
 
-    private String version = "V2.6";
+    private String version = "V3.0";
     private JButton createBtn;
     private JButton helpBtn;
     /**
      * 产品所属类型
      */
-    private JComboBox<String> jComboBox;
+    private JComboBox<String> productTypeBox;
     /**
      * 所属云
      */
@@ -106,16 +109,16 @@ public class MainUI extends JFrame implements ActionListener {
         this.getContentPane().add(context, BorderLayout.CENTER);
 
         //产品类型下拉列表
-        jComboBox = new JComboBox<>();
-        jComboBox.addItem(ProductEnum.BIZ.getName());
-        jComboBox.addItem(ProductEnum.CR.getName());
-        jComboBox.setPreferredSize(new Dimension(200, 30));
-        head.add(jComboBox);
-        jComboBox.addActionListener(this);
+        productTypeBox = new JComboBox<>();
+        productTypeBox.addItem(ProductEnum.BIZ.getName());
+        productTypeBox.addItem(ProductEnum.INDUSTRY.getName());
+        productTypeBox.setPreferredSize(new Dimension(200, 30));
+        head.add(productTypeBox);
+        productTypeBox.addActionListener(this);
 
         //云下拉列表
         cloudBox = new JComboBox<>();
-        for (ProductDomainEnum domainEnum:ProductDomainEnum.values()) {
+        for (ProductDomainEnum domainEnum : ProductDomainEnum.values()) {
             cloudBox.addItem(domainEnum.getName());
         }
         cloudBox.setPreferredSize(new Dimension(200, 30));
@@ -188,23 +191,63 @@ public class MainUI extends JFrame implements ActionListener {
                 File folder = jFileChooser.getSelectedFile();
                 folderFiled.setText(folder.getAbsolutePath());
             }
-        } else if (cloudBox.equals(source)) {
-            ProductDomainEnum type = ProductDomainEnum.values()[cloudBox.getSelectedIndex()];
-            //设置默认值
+        }
+        //产品类型
+        else if (productTypeBox.equals(source)) {
+            ProductEnum type = ProductEnum.getEnumByName(productTypeBox.getSelectedItem());
+            ComboBoxModel data = new DefaultComboBoxModel();
+            for (ProductDomainEnum domain : ProductDomainEnum.values()) {
+                if (type == ProductEnum.BIZ) {
+                    if (domain.isStd()) {
+                        ((DefaultComboBoxModel) data).addElement(domain.getName());
+                    }
+                } else {
+                    if (type == ProductEnum.INDUSTRY) {
+                        if (!domain.isStd()) {
+                            ((DefaultComboBoxModel) data).addElement(domain.getName());
+                        }
+                    }
+                }
+            }
+            cloudBox.setModel(data);
+            cloudFiled.setText("");
+            appsFiled.setText("");
 
-            if (ProductDomainEnum.PMGT == type) {
+        } else if (cloudBox.equals(source)) {
+            ProductDomainEnum domain = ProductDomainEnum.getEnumByName(cloudBox.getSelectedItem());
+            if (domain == null) {
+                return;
+            }
+            cloudFiled.setText(domain.getCloudCode());
+            //设置默认值
+            //项目云
+            if (ProductDomainEnum.PMGT == domain) {
                 appsFiled.setText("pmbs,pmpm,pmas,pmba,pmct,pmco,pmim,pmfs,pmsc,pmem,pmpt");
-            }else if(ProductDomainEnum.EPM == type){
-                cloudFiled.setText(type.getCloudCode());
+            }
+            //企业绩效云
+            else if (ProductDomainEnum.EPM == domain) {
+                cloudFiled.setText(domain.getCloudCode());
                 appsFiled.setText("eb,bgmd,bgbd,bgm,bgc");
             }
-            else if (ProductDomainEnum.EC == type) {
+            //建筑项目云
+            else if (ProductDomainEnum.EC == domain) {
                 appsFiled.setText("cont,ecbd,ecco,ecma");
+            }
+            //我家云
+            else if (ProductDomainEnum.ASC == domain) {
+                appsFiled.setText("psmd,abd,ren,ass,rec,cha,fts");
+            }
+            //我家云
+            else if (ProductDomainEnum.PSC == domain) {
+                appsFiled.setText("psbd");
             }
 
         } else if (createBtn.equals(source)) {
-            //获取补丁所属产品
-            ProductEnum type = ProductEnum.values()[jComboBox.getSelectedIndex()];
+            //获取补丁所属产品信息
+            ProductEnum type = ProductEnum.getEnumByName(productTypeBox.getSelectedItem());
+            //获取云信息
+            ProductDomainEnum domain = ProductDomainEnum.getEnumByName(cloudBox.getSelectedItem());
+
             String cloud = cloudFiled.getText().trim();
             if ("".equals(cloud)) {
                 JOptionPane.showMessageDialog(this, "请输入云标识", "提示信息", JOptionPane.INFORMATION_MESSAGE);
@@ -238,50 +281,50 @@ public class MainUI extends JFrame implements ActionListener {
             //获取有效的dm文件
             String dmFolderPath = folderPath + File.separator + ZipFileType.dm.toString();
             File dmFolder = new File(dmFolderPath);
-            if(!dmFolder.exists()){
-                JOptionPane.showMessageDialog(this,String.format("补丁制作中止，原因是目录%s不存在，请检查。",dmFolderPath));
+            if (!dmFolder.exists()) {
+                JOptionPane.showMessageDialog(this, String.format("补丁制作中止，原因是目录%s不存在，请检查。", dmFolderPath));
             }
             File[] dmFiles = dmFolder.listFiles();
             List<File> validDmFiles = new ArrayList<File>();
-            for (String cloudAndAppName : appNameList){
+            for (String cloudAndAppName : appNameList) {
                 boolean isExist = false;
                 for (File dmFile : dmFiles) {
-                    String fileName = dmFile.getName().replace("-dm-1.x.zip","");
+                    String fileName = dmFile.getName().replace("-dm-1.x.zip", "");
                     if (fileName.equals(cloudAndAppName)) {
                         validDmFiles.add(dmFile);
                         isExist = true;
                         break;
                     }
                 }
-                if(!isExist){
-                    JOptionPane.showMessageDialog(this, String.format("%s目录下未找到%s相关的压缩包",dmFolder.getPath(),cloudAndAppName), "警告信息", JOptionPane.WARNING_MESSAGE);
+                if (!isExist) {
+                    JOptionPane.showMessageDialog(this, String.format("%s目录下未找到%s相关的压缩包", dmFolder.getPath(), cloudAndAppName), "警告信息", JOptionPane.WARNING_MESSAGE);
                 }
             }
             //获取有效的jar文件
             String bizFolderPath = folderPath + File.separator + ZipFileType.jar.toString() + File.separator + "biz";
             File jarFolder = new File(bizFolderPath);
-            if(!jarFolder.exists()){
-                JOptionPane.showMessageDialog(this,String.format("补丁制作中止，原因是目录%s不存在，请检查。",bizFolderPath));
+            if (!jarFolder.exists()) {
+                JOptionPane.showMessageDialog(this, String.format("补丁制作中止，原因是目录%s不存在，请检查。", bizFolderPath));
             }
             File[] jarFiles = jarFolder.listFiles();
             List<File> validJarFiles = new ArrayList<File>();
-            for (String cloudAndAppName : appNameList){
+            for (String cloudAndAppName : appNameList) {
                 boolean isExist = false;
                 for (File jarFile : jarFiles) {
-                    String fileName = jarFile.getName().replace(".zip","");
+                    String fileName = jarFile.getName().replace(".zip", "");
                     if (fileName.equals(cloudAndAppName)) {
                         validJarFiles.add(jarFile);
                         isExist = true;
                         break;
                     }
                 }
-                if(!isExist){
-                    JOptionPane.showMessageDialog(this, String.format("%s目录下未找到%s相关的压缩包",jarFolder.getPath(),cloudAndAppName), "警告信息", JOptionPane.WARNING_MESSAGE);
+                if (!isExist) {
+                    JOptionPane.showMessageDialog(this, String.format("%s目录下未找到%s相关的压缩包", jarFolder.getPath(), cloudAndAppName), "警告信息", JOptionPane.WARNING_MESSAGE);
                 }
             }
 
             if (validDmFiles.isEmpty() && validJarFiles.isEmpty()) {
-                JOptionPane.showMessageDialog(this, String.format("%s目录下未找到相关的元数据与应用压缩包",folderPath), "错误信息", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, String.format("%s目录下未找到相关的元数据与应用压缩包", folderPath), "错误信息", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             info.setText(LocalDateTime.now() + ",开始制作补丁\n");
@@ -332,7 +375,7 @@ public class MainUI extends JFrame implements ActionListener {
             String xmlFile = folderPath + File.separator + "kdpkgs.xml";
             info.append("配置文件生成中......\n");
             try {
-                this.createXml(type, appNameList, appidList, versionNo, md5Map, xmlFile);
+                this.createXml(type, domain, appNameList, appidList, versionNo, md5Map, xmlFile);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 info.append("生成配置文件异常：" + ex.getMessage() + "\n");
@@ -344,8 +387,7 @@ public class MainUI extends JFrame implements ActionListener {
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
             String zipPatch = FileUtil.compress(folderPath, folderPath, cloud + "-v" + versionNo + "-" + dateFormatter.format(LocalDate.now()) + timeFormatter.format(LocalTime.now()));
             info.append(LocalDateTime.now() + "，补丁制作完成，补丁包位置：" + zipPatch + "\n");
-        }
-        else if(helpBtn.equals(source)){
+        } else if (helpBtn.equals(source)) {
             JOptionPane.showMessageDialog(this, String.format("开发者：高峰 \n 联系电话：15080668358"), "提示信息", JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -353,7 +395,7 @@ public class MainUI extends JFrame implements ActionListener {
     /**
      * 生成xml文件
      */
-    private void createXml(ProductEnum type, List<String> appNameList, List<String> appidList, String versionNo, Map<String, Map<String, String>> md5Map, String xmlFile) throws Exception {
+    private void createXml(ProductEnum type, ProductDomainEnum domain, List<String> appNameList, List<String> appidList, String versionNo, Map<String, Map<String, String>> md5Map, String xmlFile) throws Exception {
         //创建xml文档
         Document document = DocumentHelper.createDocument();
         //创建根元素
@@ -367,9 +409,14 @@ public class MainUI extends JFrame implements ActionListener {
         //添加根元素下的子元素及其属性,内容
         Element product = kdpkgs.addElement("product");
         if (type == ProductEnum.BIZ) {
-            product.addAttribute("name", "cosmic_" + type.getTypeCode()).addAttribute("nameCN", "金蝶云苍穹平台" + type.getName()).addAttribute("ver", versionNo);
+            product.addAttribute("name", "cosmic_biz").addAttribute("nameCN", ProductEnum.BIZ.getName()).addAttribute("ver", versionNo);
         } else {
-            product.addAttribute("name", "cosmic_" + type.getTypeCode()).addAttribute("nameCN", "金蝶云苍穹" + type.getName() + "行业版").addAttribute("ver", versionNo);
+            //由于建筑的补丁已经这样发了，所以要兼容一下
+            if (ProductDomainEnum.EC.getCloudCode().equals(domain.getCloudCode())) {
+                product.addAttribute("name", "cosmic_cr").addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）",ProductDomainEnum.EC.getName())).addAttribute("ver", versionNo);
+            } else {
+                product.addAttribute("name", "cosmic_" + domain.getCloudCode()).addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）",domain.getName())).addAttribute("ver", versionNo);
+            }
         }
         product.addElement("force").addText("true");
         Map<String, String> jarMap = md5Map.get(ZipFileType.jar.toString());
