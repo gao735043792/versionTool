@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class MainUI extends JFrame implements ActionListener {
 
-    private String version = "V3.0";
+    private String version = "3.0";
     private JButton createBtn;
     private JButton helpBtn;
     /**
@@ -86,7 +86,7 @@ public class MainUI extends JFrame implements ActionListener {
      */
     private void initFrame() {
 
-        this.setTitle("金蝶云苍穹补丁制作工具" + version);
+        this.setTitle("金蝶云苍穹补丁制作工具V" + version);
         this.setLocation(100, 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -143,7 +143,7 @@ public class MainUI extends JFrame implements ActionListener {
         head.add(versionLabel);
         versionNoFiled = new JTextField();
         //设置默认值
-        versionNoFiled.setText("2.0.");
+        versionNoFiled.setText(version + ".");
         versionNoFiled.setPreferredSize(new Dimension(50, 30));
         head.add(versionNoFiled);
 
@@ -261,8 +261,8 @@ public class MainUI extends JFrame implements ActionListener {
             }
 
             String versionNo = versionNoFiled.getText().trim();
-            if ("".equals(versionNo)) {
-                JOptionPane.showMessageDialog(this, "请输入补丁版本号", "提示信息", JOptionPane.INFORMATION_MESSAGE);
+            if ("".equals(versionNo) || versionNo.endsWith(".")) {
+                JOptionPane.showMessageDialog(this, "请输入有效的补丁版本号", "提示信息", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -413,9 +413,9 @@ public class MainUI extends JFrame implements ActionListener {
         } else {
             //由于建筑的补丁已经这样发了，所以要兼容一下
             if (ProductDomainEnum.EC.getCloudCode().equals(domain.getCloudCode())) {
-                product.addAttribute("name", "cosmic_cr").addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）",ProductDomainEnum.EC.getName())).addAttribute("ver", versionNo);
+                product.addAttribute("name", "cosmic_cr").addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）", ProductDomainEnum.EC.getName())).addAttribute("ver", versionNo);
             } else {
-                product.addAttribute("name", "cosmic_" + domain.getCloudCode()).addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）",domain.getName())).addAttribute("ver", versionNo);
+                product.addAttribute("name", "cosmic_" + domain.getCloudCode()).addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）", domain.getName())).addAttribute("ver", versionNo);
             }
         }
         product.addElement("force").addText("true");
