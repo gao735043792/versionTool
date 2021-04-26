@@ -112,7 +112,7 @@ public class MainUI extends JFrame implements ActionListener {
         productTypeBox = new JComboBox<>();
         productTypeBox.addItem(ProductEnum.BIZ.getName());
         productTypeBox.addItem(ProductEnum.INDUSTRY.getName());
-        productTypeBox.setPreferredSize(new Dimension(200, 30));
+        productTypeBox.setPreferredSize(new Dimension(150, 30));
         head.add(productTypeBox);
         productTypeBox.addActionListener(this);
 
@@ -121,7 +121,7 @@ public class MainUI extends JFrame implements ActionListener {
         for (ProductDomainEnum domainEnum : ProductDomainEnum.values()) {
             cloudBox.addItem(domainEnum.getName());
         }
-        cloudBox.setPreferredSize(new Dimension(200, 30));
+        cloudBox.setPreferredSize(new Dimension(150, 30));
         head.add(cloudBox);
         cloudBox.addActionListener(this);
 
@@ -135,7 +135,7 @@ public class MainUI extends JFrame implements ActionListener {
         appsLabel = new JLabel("应用标识");
         head.add(appsLabel);
         appsFiled = new JTextField();
-        appsFiled.setPreferredSize(new Dimension(350, 30));
+        appsFiled.setPreferredSize(new Dimension(150, 30));
         head.add(appsFiled);
 
         //版本号
@@ -153,7 +153,7 @@ public class MainUI extends JFrame implements ActionListener {
         folderFiled = new JTextField();
         head.add(selectFolder);
         head.add(folderFiled);
-        folderFiled.setPreferredSize(new Dimension(300, 30));
+        folderFiled.setPreferredSize(new Dimension(350, 30));
         selectFolder.addActionListener(this);
 
         //制作按钮
@@ -222,7 +222,7 @@ public class MainUI extends JFrame implements ActionListener {
             //设置默认值
             //项目云
             if (ProductDomainEnum.PMGT == domain) {
-                appsFiled.setText("pmbs,pmpm,pmas,pmba,pmct,pmco,pmim,pmfs,pmsc,pmem,pmpt");
+                appsFiled.setText("pmbs,pmas,pmba,pmct,pmco,pmim,pmfs,pmsc,pmem,pmpt");
             }
             //企业绩效云
             else if (ProductDomainEnum.EPM == domain) {
