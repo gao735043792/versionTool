@@ -171,7 +171,7 @@ public class MainUI extends JFrame implements ActionListener {
         content.add(sp);
 
         //版权
-        JLabel rightLabel = new JLabel("建筑出品 必属精品  ©CopyRight Mr.靠谱");
+        JLabel rightLabel = new JLabel("高峰出品 必属精品");
         bottom.add(rightLabel);
     }
 
@@ -399,7 +399,7 @@ public class MainUI extends JFrame implements ActionListener {
         //创建xml文档
         Document document = DocumentHelper.createDocument();
         //创建根元素
-        Element kdpkgs = document.addElement("kdpkgs").addAttribute("isv", "kingdee").addAttribute("ver", versionNo);
+        Element kdpkgs = document.addElement("skdpkgs").addAttribute("isv", "kingdee").addAttribute("ver", versionNo);
         kdpkgs.addElement("format").addAttribute("ver", "1.0");
         Element description = kdpkgs.addElement("description");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -408,6 +408,8 @@ public class MainUI extends JFrame implements ActionListener {
 
         //添加根元素下的子元素及其属性,内容
         Element product = kdpkgs.addElement("product");
+        /*
+        苍穹4.0品牌升级后分领域补丁
         if (type == ProductEnum.BIZ) {
             product.addAttribute("name", "cosmic_biz").addAttribute("nameCN", ProductEnum.BIZ.getName()).addAttribute("ver", versionNo);
         } else {
@@ -418,6 +420,10 @@ public class MainUI extends JFrame implements ActionListener {
                 product.addAttribute("name", "cosmic_" + domain.getCloudCode()).addAttribute("nameCN", String.format("金蝶云苍穹行业产品（%s）", domain.getName())).addAttribute("ver", versionNo);
             }
         }
+        */
+
+        product.addAttribute("name", domain.getDomainCode()).addAttribute("nameCN", String.format("%s", domain.getDomainName())).addAttribute("ver", versionNo);
+
         product.addElement("force").addText("true");
         Map<String, String> jarMap = md5Map.get(ZipFileType.jar.toString());
         Map<String, String> dmMap = md5Map.get(ZipFileType.dm.toString());
@@ -442,8 +448,11 @@ public class MainUI extends JFrame implements ActionListener {
             }
             for (String jarName : jarMap.keySet()) {
                 if (jarName.contains(appName)) {
-                    resource.append(",");
+                    if(resource.length() != 0){
+                        resource.append(",");
+                    }
                     resource.append(StringUtil.getHashCode(jarName));
+
                     break;
                 }
             }
