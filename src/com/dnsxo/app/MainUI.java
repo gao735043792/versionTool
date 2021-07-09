@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class MainUI extends JFrame implements ActionListener {
 
-    private String version = "3.0";
+    private String version = "4.0";
     private JButton createBtn;
     private JButton helpBtn;
     /**
