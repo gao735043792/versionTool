@@ -399,7 +399,7 @@ public class MainUI extends JFrame implements ActionListener {
         //创建xml文档
         Document document = DocumentHelper.createDocument();
         //创建根元素
-        Element kdpkgs = document.addElement("skdpkgs").addAttribute("isv", "kingdee").addAttribute("ver", versionNo);
+        Element kdpkgs = document.addElement("kdpkgs").addAttribute("isv", "kingdee").addAttribute("ver", versionNo);
         kdpkgs.addElement("format").addAttribute("ver", "1.0");
         Element description = kdpkgs.addElement("description");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
