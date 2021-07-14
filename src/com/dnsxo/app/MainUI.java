@@ -240,6 +240,8 @@ public class MainUI extends JFrame implements ActionListener {
             //我家云
             else if (ProductDomainEnum.PSC == domain) {
                 appsFiled.setText("psbd");
+            }else if(ProductDomainEnum.BD == domain){
+                appsFiled.setText("bd");
             }
 
         } else if (createBtn.equals(source)) {
@@ -422,7 +424,9 @@ public class MainUI extends JFrame implements ActionListener {
         }
         */
 
-        product.addAttribute("name", domain.getDomainCode()).addAttribute("nameCN", String.format("%s", domain.getDomainName())).addAttribute("ver", versionNo);
+        product.addAttribute("name", domain.getDomainCode())
+                .addAttribute("nameCN", String.format("%s", domain.getDomainName()))
+                .addAttribute("ver", versionNo);
 
         product.addElement("force").addText("true");
         Map<String, String> jarMap = md5Map.get(ZipFileType.jar.toString());

@@ -10,6 +10,8 @@ public enum ProductDomainEnum {
     //标准产品
     PMGT(100, "项目云", "pmgt", "constellation_pmgt","项目云",true),
     EPM(101, "企业绩效云", "epm", "constellation_epbc","预算&报表",true),
+    BD(102, "系统服务云", "bd", "constellation_bdmaster","公共基础云",true),
+
     //行业产品
     EC(1001, "建筑项目云", "ec", "comsic_cr","建筑项目云",false),
     ASC(1005, "资产服务云", "asc", "comsic_asc","资产服务云",false),
